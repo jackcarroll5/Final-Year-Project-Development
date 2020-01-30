@@ -1,0 +1,124 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <!--Reference to establish CSS classes for setting up Leaflet open source
+    Javascript interactive maps - https://leafletjs.com/examples/quick-start/ -->
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+          crossorigin="" />
+
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+            integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+            crossorigin=""></script>
+
+    <!--Plugin for putting the goecoding search feature into the OpenStreetMap map - https://gis.stackexchange.com/questions/290799/leaflet-address-search-geocoding-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <style>
+        #geofencemapid {
+            width: 600px;
+            height: 400px;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Home Page for Geofence Prototype App</h2>
+    <br>
+    <p>@Html.Raw(Server.HtmlEncode(ViewBag.Message).Replace("\n", "<br/>"))</p>
+    <br>
+    <div id="geofencemapid"></div>
+    <script>
+    //Reference - https://leafletjs.com/examples/quick-start/
+        var map = L.map('geofencemapid').setView([52.343095, -8.972363], 16, [greyscale, streetMap]); //Location centred at chosen local field in home village
+
+       var streetMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwcGVyamFjayIsImEiOiJjazNubDAydDMwcnl0M3FvZDVhNmQ2bnYxIn0.kJE_9gu4-GtqOXfmSqXQlA', { //Unique access key from Mapbox (Alternative to Google Maps)
+            maxZoom: 16,
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            id: 'mapbox/streets-v11'
+        });
+
+        var greyscale = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwcGVyamFjayIsImEiOiJjazNubDAydDMwcnl0M3FvZDVhNmQ2bnYxIn0.kJE_9gu4-GtqOXfmSqXQlA', { //Unique access key from Mapbox (Alternative to Google Maps)
+            maxZoom: 16,
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            id: 'mapbox/light-v9'
+        });
+
+        var mainLayers = {
+            "Greyscale": greyscale,
+            "Street": streetMap
+        };
+
+        L.Control.geocoder().addTo(map);
+
+        var marker = L.marker([52.343095, -8.972363]).addTo(map);
+        var mark = L.marker([52.343348, -8.970760]).addTo(map);
+        var marked = L.marker([52.350095, -8.962363]).addTo(map);
+
+        var circle = L.circle([52.343095, -8.972363], {
+            color: 'green',
+            fillColor: '#0F0',
+            fillOpacity: 0.5,
+            radius: 125,
+        }).addTo(map)
+
+        L.control.layers(mainLayers).addTo(map); 
+ 
+        //Reference for seeing if an asset is within the geofence - https://stackoverflow.com/questions/28742112/unable-to-display-only-the-points-within-a-specific-range-circle-using-the-ge
+        L.Circle.include({
+            contains: function (latLng) {
+                return this.getLatLng().distanceTo(latLng) < this.getRadius();
+            }
+        });
+
+        marker.bindPopup("<b>Hello world!</b><br>This is the centre of the field marker for this simulation situated at (" + marker.getLatLng() + ").").openPopup();
+        mark.bindPopup("<b>Hello world!</b><br>This represents the cattle asset for this simulation at (" + mark.getLatLng() + ").").openPopup();
+        marked.bindPopup("<b>Hello world!</b><br>This represents another cattle asset for this simulation at (" + marked.getLatLng() + ").").openPopup();
+
+        var popup = L.popup()
+            .setLatLng([52.345444, -8.968466])
+            .setContent("This is a a standalone popup.")
+            .openOn(map);
+
+        function onMapClick(event) {
+            popup.setLatLng(event.latlng)
+                .setContent("The map is clicked at " + event.latlng.toString())
+                .openOn(map);
+        }
+
+        map.on('zoombegin', function (event) {
+            event.alert("zoom starts here");
+        });
+
+        map.on('zoomfinish', function (event) {
+            event.alert("zoom finishes here");
+        });
+
+        function markerInOrOutOfCircle(event) {
+            var markedAsset = L.marker(event.latlng).addTo(map);
+            var res = (circle.contains(markedAsset.getLatLng())) ? 'within' : 'outside';
+            markedAsset.bindPopup('The asset located at ' + markedAsset.getLatLng() + ' is ' + res + ' the geofence');
+            markedAsset.openPopup();
+        }
+
+        map.on('click', markerInOrOutOfCircle);
+
+
+
+    </script>
+</body>
+</html>
