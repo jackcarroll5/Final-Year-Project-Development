@@ -33,16 +33,16 @@
 </head>
 
 <body>
-    <h2>Home Page for Geofence Prototype App</h2>
+    <h2>Magnifico Geofenceo for Cattle</h2>
     <br>
     <p>@Html.Raw(Server.HtmlEncode(ViewBag.Message).Replace("\n", "<br/>"))</p>
     <br>
     <div id="geofencemapid"></div>
     <script>
-    //Reference - https://leafletjs.com/examples/quick-start/
+        //Reference - https://leafletjs.com/examples/quick-start/
         var map = L.map('geofencemapid').setView([52.343095, -8.972363], 16, [greyscale, streetMap]); //Location centred at chosen local field in home village
 
-       var streetMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwcGVyamFjayIsImEiOiJjazNubDAydDMwcnl0M3FvZDVhNmQ2bnYxIn0.kJE_9gu4-GtqOXfmSqXQlA', { //Unique access key from Mapbox (Alternative to Google Maps)
+        var streetMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwcGVyamFjayIsImEiOiJjazNubDAydDMwcnl0M3FvZDVhNmQ2bnYxIn0.kJE_9gu4-GtqOXfmSqXQlA', { //Unique access key from Mapbox (Alternative to Google Maps)
             maxZoom: 16,
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
                 '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -65,9 +65,10 @@
 
         L.Control.geocoder().addTo(map);
 
-        var marker = L.marker([52.343095, -8.972363]).addTo(map);
-        var mark = L.marker([52.343348, -8.970760]).addTo(map);
+        var marker = L.marker([52.34319, -8.972401]).addTo(map);
+        var mark = L.marker([52.343249, -8.971536]).addTo(map);
         var marked = L.marker([52.350095, -8.962363]).addTo(map);
+        var marky = L.marker([52.345053, -8.974467]).addTo(map);
 
         var circle = L.circle([52.343095, -8.972363], {
             color: 'green',
@@ -76,8 +77,8 @@
             radius: 125,
         }).addTo(map)
 
-        L.control.layers(mainLayers).addTo(map); 
- 
+        L.control.layers(mainLayers).addTo(map);
+
         //Reference for seeing if an asset is within the geofence - https://stackoverflow.com/questions/28742112/unable-to-display-only-the-points-within-a-specific-range-circle-using-the-ge
         L.Circle.include({
             contains: function (latLng) {
@@ -86,8 +87,9 @@
         });
 
         marker.bindPopup("<b>Hello world!</b><br>This is the centre of the field marker for this simulation situated at (" + marker.getLatLng() + ").").openPopup();
-        mark.bindPopup("<b>Hello world!</b><br>This represents the cattle asset for this simulation at (" + mark.getLatLng() + ").").openPopup();
-        marked.bindPopup("<b>Hello world!</b><br>This represents another cattle asset for this simulation at (" + marked.getLatLng() + ").").openPopup();
+        mark.bindPopup("<b>Howdy!</b><br>This represents the cattle asset for this simulation at (" + mark.getLatLng() + ").").openPopup();
+        marked.bindPopup("<b>Yo!</b><br>This represents another cattle asset for this simulation at (" + marked.getLatLng() + ").").openPopup();
+        marky.bindPopup("<b>Hey!</b><br>This represents yet another cattle asset within this simulation at (" + marky.getLatLng() + ").").openPopup();
 
         var popup = L.popup()
             .setLatLng([52.345444, -8.968466])
@@ -116,9 +118,25 @@
         }
 
         map.on('click', markerInOrOutOfCircle);
-
-
-
     </script>
+
+   <div>
+    <h2>
+       <span style="font-size: 24px; 
+            margin: 21px 0; 
+            padding-top: 25px;
+            display: block;">Geofence Dashboard</span>
+       </h2>
+   </div> 
+
+   <div><iframe width="1000"
+        height="800"
+        align="middle"
+        marginheight="2"
+        src="https://app.powerbi.com/view?r=eyJrIjoiMjRmYzI4MGYtM2EwZi00ZTQwLWIyYjgtMzIwN2IwYWQ1Mzk4IiwidCI6IjI0NjYyNWVkLWMzOGMtNGQ4MS05ZTZjLWJlODZiYmU0OGY4OSIsImMiOjh9"
+        frameborder="0"
+        allowFullScreen="true">
+</iframe></div> 
+
 </body>
 </html>
