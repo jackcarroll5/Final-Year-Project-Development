@@ -1,0 +1,129 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "GPS Alarm",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 3,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 619,
+          "layoutY": 197
+        },
+        "type": "org.thingsboard.rule.engine.action.TbClearAlarmNode",
+        "name": "Clear Alarm",
+        "debugMode": false,
+        "configuration": {
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "alarmType": "Outside Coordinates"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 890,
+          "layoutY": 62
+        },
+        "type": "org.thingsboard.rule.engine.mail.TbMsgToEmailNode",
+        "name": "GeofenceBreachEmail",
+        "debugMode": false,
+        "configuration": {
+          "fromTemplate": "info@testmail.org",
+          "toTemplate": "${userEmail}",
+          "ccTemplate": null,
+          "bccTemplate": null,
+          "subjectTemplate": "Device ${deviceType} outside marked field area ",
+          "bodyTemplate": "Device ${deviceName} has breached the geofence and is currently situated in and location ${temp}"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1205,
+          "layoutY": 62
+        },
+        "type": "org.thingsboard.rule.engine.mail.TbSendEmailNode",
+        "name": "Email",
+        "debugMode": false,
+        "configuration": {
+          "useSystemSmtpSettings": true,
+          "smtpHost": "localhost",
+          "smtpPort": 25,
+          "username": null,
+          "password": null,
+          "smtpProtocol": "smtp",
+          "timeout": 10000,
+          "enableTls": false,
+          "tlsVersion": "TLSv1.2",
+          "enableProxy": false,
+          "proxyHost": null,
+          "proxyPort": null,
+          "proxyUser": null,
+          "proxyPassword": null
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 320,
+          "layoutY": 149
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Outside User-Created Coordinates",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return msg.latitude == \"52.342936\" && msg.longitude == \"-8.972407\";"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 596,
+          "layoutY": 60
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "Create Alarm",
+        "debugMode": false,
+        "configuration": {
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "useMessageAlarmData": false,
+          "alarmType": "Outside Coordinates",
+          "severity": "CRITICAL",
+          "propagate": true,
+          "relationTypes": []
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 1,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 4,
+        "type": "True"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 0,
+        "type": "False"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 1,
+        "type": "Created"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}
