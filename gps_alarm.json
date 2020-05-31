@@ -80,7 +80,7 @@
         "name": "Outside User-Created Coordinates",
         "debugMode": false,
         "configuration": {
-          "jsScript": "return msg.latitude == \"52.342936\" && msg.longitude == \"-8.972407\";"
+          "jsScript": "return msg.latitude == 52.342936 && msg.longitude == -8.972407;"
         }
       },
       {
